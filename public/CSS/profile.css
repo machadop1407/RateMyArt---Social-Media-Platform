@@ -1,0 +1,139 @@
+body{
+	font-family: "Avenir Next" !important;
+	min-height: 100vh;
+}
+#uploads .container {
+	font-weight: 100;
+}
+
+.profile-container {
+	margin-top: 150px;
+}
+.container .row #workTitle h1 {
+    font-size: 30px;
+}
+
+/* .container .row #uploadImg {
+	max-width: 550px;
+} */
+
+.btn-primary {
+	background-color: #feffff !important;
+	border-color: gainsboro;
+	color: #3aafa9;
+}
+
+.btn-primary:hover{
+	border-color: black;
+	color: #3aafa9;
+	font-weight: 600;
+}
+
+.btn-primary:active{
+	color: #3aafa9 !important;
+	background-color: rgb(230, 230, 230) !important;
+}
+
+.btn-success {
+	background-color: #3aafa9 !important;
+
+}
+
+.container .row #likeBttn {
+	max-width: 32px;
+}
+
+
+.container .row #commentBttn {
+	max-width: 32px;
+}
+
+
+
+hr {
+	height: 2px;
+	background-color: #3aafa9;
+
+}
+
+.col-sm-4 {
+
+	max-height: 600px;
+	overflow: hidden;
+}
+
+.col-sm-4 #imgPanel {
+	max-height: 200px;
+	overflow: hidden;
+    background-color: whitesmoke;
+}
+
+.col-sm-4 img {
+	max-height: 200px; 
+	
+	
+}
+
+.container .row #uploadImg:hover {
+	cursor: pointer;
+	-webkit-filter: grayscale(50%); /* Safari 6.0 - 9.0 */
+	filter: grayscale(50%);
+	
+}
+
+input, .text-center a {
+	color: black;
+	border: none;
+	font-size: 15px;
+	font-weight: 500;
+	background-color: transparent;
+}
+
+input:hover {
+	color: #3aafa9;
+}
+
+#followBttn.btn.btn-outline-info:hover {
+	background-color: white;
+	color: currentColor;
+	
+}
+
+#followBttn.btn.btn-outline-info:focus{
+	box-shadow: none;
+}
+
+#followBttn.btn.btn-success:focus{
+	box-shadow: none;
+}
+
+#imgPanel .btn {
+	position: absolute;
+	top: 5%;
+	left: 80%;
+	background-color: whitesmoke;
+	visibility: hidden;
+}
+
+#imgPanel {
+	margin-top: 20px;
+}
+
+#deleteBttn {
+	margin-left: 10px;
+}
+@media only screen and (max-width: 600px) {
+	.container .row #uploadImg {
+		max-width: 95%;
+	}
+
+	.container .row .col-sm-5 #upload_img_div {
+        max-width: 95%;
+
+    }
+    
+    .col-sm-5 {
+        margin-left: 0px;
+    }
+	
+}

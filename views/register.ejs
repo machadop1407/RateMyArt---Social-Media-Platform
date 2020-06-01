@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<head>
+    <title>Register</title>
+    <%- include('includes/head.ejs') %>
+    <link rel="stylesheet" type="text/css" href="../CSS/register.css">
+    <script src="https://code.jquery.com/jquery-3.5.0.min.js"></script>
+
+    
+</head>
+<body>
+	
+<%- include('includes/header.ejs') %>
+    
+<div class="container register-form">
+
+    <% if (locals.errors) { %>
+        <% Object.values(errors).forEach(error => { %>
+          <div class="alert alert-danger" role="alert">
+            <li><%= error.msg %></li>
+          </div>
+        <% }); %>
+  <% } %>
+    <h2>Register</h2>
+    <form method="post" action="/register" class="needs-validation" novalidate>
+      <div class="form-group">
+        <label for="username"><span style="color: red;">* </span>Username (Between 3-15 Characters)</label>
+        <input type="text" class="form-control" id="uname" placeholder="Enter Username" name="username" required>
+        <div class="valid-feedback">Valid.</div>
+        <div class="invalid-feedback">Please fill out this field.</div>
+      </div>
+      <div class="form-group">
+        <label for="password"><span style="color: red;">* </span>Password (Between 4-15 Characters)</label>
+        <input type="password" class="form-control" id="pwd" placeholder="Enter Password" name="password" required>
+        <div class="valid-feedback">Valid.</div>
+        <div class="invalid-feedback">Please fill out this field.</div>
+      </div>
+      <div class="form-group">
+        <label for="firstname"><span style="color: red;">* </span>First Name</label>
+        <input type="text" class="form-control" id="firstname" placeholder="Enter First Name" name="firstname" required>
+        <div class="valid-feedback">Valid.</div>
+        <div class="invalid-feedback">Please fill out this field.</div>
+      </div>
+      <div class="form-group">
+        <label for="lastname"><span style="color: red;">* </span>Last Name</label>
+        <input type="text" class="form-control" id="lastname" placeholder="Enter Last Name" name="lastname" required>
+        <div class="valid-feedback">Valid.</div>
+        <div class="invalid-feedback">Please fill out this field.</div>
+      </div>
+      <div class="form-group">
+        <label for="email"><span style="color: red;">* </span>Email</label>
+        <input type="email" class="form-control" id="email" placeholder="Enter Email" name="email" required>
+        <div class="valid-feedback">Valid.</div>
+        <div class="invalid-feedback">Please fill out this field.</div>
+      </div>
+  
+      <button type="submit" class="btn btn-primary">Register</button>
+    </form>
+  </div>
+
+
+
+  <footer class="page-footer font-small blue bottom" style="margin-top: 115px; background-color: #3aafa9 !important;">
+    <div class="footer-copyright text-center py-3" style="color: #feffff !important;">© 2020 Copyright:
+      <a href="/" style="color: #def2f1 !important;"> RateMyArt.com</a>
+    </div>  
+  </footer>
+</body>
+
+</html>

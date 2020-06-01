@@ -1,0 +1,15 @@
+.btn-primary {
+    background-color: #3aafa9 !important;
+}
+
+#searchResults.btn-primary{
+	background-color: #feffff !important;
+	border-color: gainsboro;
+	color: #3aafa9;
+}
+
+#searchResults.btn-primary:hover{
+	border-color: black;
+	color: #3aafa9;
+	font-weight: 600;
+}

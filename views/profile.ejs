@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<head>
+    <title>Profile</title>
+    <%- include('includes/head.ejs') %>
+    <link rel="stylesheet" type="text/css" href="../CSS/profile.css">
+    <!-- <script src="../JavaScript/profile.js"></script> -->
+</head>
+<body>
+	
+<%- include('includes/header.ejs') %>
+        
+<div class="container profile-container">
+    <div class="row d-flex justify-content-center">
+        <div class="col-lg-4 text-center" style="border-bottom: 1px solid black;">
+            <h1 id="profileName"> Hello, <%= username %>! <input type="button" value="Edit Profile" data-toggle="collapse" data-target="#editProfile"> </h1>
+            <div class="collapse" id="editProfile">
+                <form action="/editProfile" method="POST">
+                    <div class="form-group">
+                      <label for="firstName">First Name:</label>
+                      <input type="text" name="first" class="form-control" value="<%= firstname %>" id="firstName">
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name:</label>
+                        <input type="text" name="last" class="form-control" value="<%= lastname %>" id="lastName">
+                      </div>
+                    <div class="form-group">
+                      <label for="bio">Bio:</label>
+                      <input type="text" name="bio" maxlength="100" class="form-control" value="<%= bio %>" id="bio">
+                    </div>
+                    <button class="btn btn-primary" id="profileChanges"> Submit Changes</button>
+                </form>
+                <p></p>
+            </div>
+        </div>
+    </div>
+
+    <% if (upload.length != 0) {%>
+    <div class="row d-flex justify-content-center" style="margin-top: 20px;">
+        <div class="col-lg-4" id="artStats" style="border-bottom: 1px solid black;">
+        <div class="text-center">Followers: <b><%=followersCount%></b></div>
+            <br>
+            <p> Amount Of Posts: <span style="font-weight: 600;"><%= upload.length %> </span></p>
+            <p> Name: <%= firstname%> <%= lastname %> </p>
+        </div>
+    </div>
+    <div class="row d-flex justify-content-center" style="margin-top: 5px;">
+        <div class="col-lg-4">
+            <p><b>Bio:</b></p>
+            <div>
+                <%= bio %>
+            </div>
+        </div>
+    </div>
+    <% } else { %>
+
+        <div class="row d-flex justify-content-center" style="margin-top: 20px;">
+            <div class="col-lg-4" id="artStats" style="border-bottom: 1px solid black;">
+                <div class="text-center">Followers: <b><%=followersCount%></b></div>
+                <br>
+                <p> Amount Of Posts: <span style="font-weight: 600;"><%= upload.length %> </span></p>
+                <p> Name: <%= firstname%> <%= lastname %> </p>
+            </div>
+        </div>
+        <div class="row d-flex justify-content-center" style="margin-top: 5px;">
+            <div class="col-lg-4">
+                <p><b>Bio:</b></p>
+                <div>
+                    <%= bio %>
+                </div>
+            </div>
+        </div>
+
+    <% } %>
+
+    <div class="row d-flex justify-content-center" style="margin-top: 70px;">
+        <div class="col-lg-4 text-center" id="workTitle">
+            <h1> Work You Uploaded: </h1>
+        </div>
+    </div>
+    <div style="margin-top: 10px;" id="uploads">
+        <div class="container-fluid text-center" style="margin-top: 50px;">
+        <div class="row" >
+        <% if (upload.length != 0) {%> 
+        <% upload.forEach(data => { %>
+            <div class="col-sm-4" style="background-color: whitesmoke; border: 7px solid white;">
+                <div id="imgPanel" class="<%=data.id%>" value="<%=data.image%>">
+                    <img src="https://storage.googleapis.com/art_images/<%=data.image%>" onclick="goToImagePage('<%=randomId+data.id%>')" class="cropImg" id="uploadImg">
+                    <button class="btn fa fa-trash" data-toggle="modal" data-target="#deleteModal" onclick="deletePrompt(this)"></button>
+                </div>
+                    <div style="margin-top: 50px;">
+                        <p style="font-weight: 500;"> <%= data.title %> / by <span style="color:  #3aafa9;"> @<%= data.user_upload %></span></p>
+                        <% if (data.description.length < 47) { %>
+                            <p><%= data.description %> </p>
+                        <% } else { %>
+                            <div>
+                                <p><%= data.description.toString().substring(0,45) %> <b>...</b></p>
+                            </div>
+                        <% } %>
+                            <p class="dateLabel"> Uploaded On: <%= data.upload_date.toString().substring(3,15)%></p>
+                    </div>
+            </div>
+            
+        <%});%>
+        </div></div>
+        <% } else { %>
+            <div class="container">
+                <div class="row d-flex justify-content-center text-center">
+                    <div class="col-lg-4">
+                        <p> You haven't uploaded any work yet.</p>
+                        <a href="/upload"><button class="btn btn-primary">Upload Work</button></a>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+        </div>
+        
+</div>
+<script>
+    goToImagePage = (id) => {
+        window.location.pathname = '/posts/' + id
+    }
+
+    '<% upload.forEach(data => { %>'
+        $('.'+'<%=data.id%>').hover(()=>{
+            $('.'+'<%=data.id%>').find('button').css({'visibility':"visible"})
+            
+        }, ()=> {
+            $('.'+'<%=data.id%>').find('button').css({'visibility':"hidden"})
+        })
+    '<% }) %>'
+
+    deletePrompt = (elem) => {
+        var workId = $(elem).parent().attr('class')
+        var workImageName = $(elem).parent().attr('value')
+        $('#deleteBttn').attr('onclick','deleteWork('+workId+',`'+workImageName+'`)')
+
+    }
+
+    deleteWork = (workId, workImageName) => {
+        $.ajax({
+            type: "POST",
+            url: "/deleteUpload",
+            data: {
+                "uploadId": workId,
+                "uploadImageName": workImageName
+            }   
+        })
+        location.reload()
+    }
+
+    $(document).ready(()=>{
+        setTimeout(cropImg(), 5000)
+            
+    })
+
+    function cropImg() {
+        $('.cropImg').each(function () {
+                console.log($(this).width())
+                if ($(this).width() > 400) {
+                    $(this).css("margin-left",$(this).width() - 400 +"px")
+            }
+        }); 
+    }
+
+    
+
+</script>
+
+<div class="modal" id="deleteModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+          <h4 class="modal-title">Delete Artwork</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          Are You Sure You Want To Delete?
+          <button type="button" class="btn btn-info" id="deleteBttn"> Yes! </button>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+  
+      </div>
+    </div>
+  </div>
+
+<%- include('includes/footer.ejs') %>
+
+
+</body>
+
+</html>
+

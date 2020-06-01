@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<head>
+    <title>Login</title>
+    <%- include('includes/head.ejs') %>
+    <link rel="stylesheet" type="text/css" href="../CSS/login.css">
+    <script src="../JavaScript/formValidation.js"></script>
+</head>
+<body>
+	
+<%- include('includes/header.ejs') %>
+		
+<div class="container login-form">
+    <h2>Login</h2>
+    <form method="post" action="/login" class="needs-validation" novalidate>
+      <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" class="form-control" id="uname" placeholder="Enter username" name="username" required>
+        <div class="valid-feedback">Valid.</div>
+        <div class="invalid-feedback">Please fill out this field.</div>
+      </div>
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" class="form-control" id="pwd" placeholder="Enter password" name="password" required>
+        <div class="valid-feedback">Valid.</div>
+        <div class="invalid-feedback">Please fill out this field.</div>
+      </div>
+  
+      <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+  </div>
+
+
+  <footer class="page-footer font-small blue bottom" style="margin-top: 234px; background-color: #3aafa9 !important;">
+    <div class="footer-copyright text-center py-3" style="color: #feffff !important;">© 2020 Copyright:
+      <a href="/" style="color: #def2f1 !important;"> RateMyArt.com</a>
+    </div>  
+  </footer>
+
+</body>
+
+</html>
+

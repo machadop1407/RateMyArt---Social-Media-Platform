@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<head>
+    <title><%= username %></title>
+    <%- include('includes/head.ejs') %>
+    <link rel="stylesheet" type="text/css" href="../CSS/profile.css">
+
+</head>
+<body>
+	
+<%- include('includes/header.ejs') %>
+        
+<div class="container profile-container">
+    <div class="row d-flex justify-content-center">
+        <div class="col-lg-4 text-center" style="border-bottom: 1px solid black;">
+            <h1 id="profileName"> <%= username %> 
+                <%if (isAuthenticated) { %>
+                <% if (username != currentUserUsername) { %> 
+                <input type="button" value="Follow" class="btn btn-success" id="followBttn" alt="<%=followersCount%>" onclick="follow(this.alt)">
+                <% } }%> 
+            </h1>
+        </div>
+    </div>
+
+    <% if (upload.length != 0) {%>
+        <div class="row d-flex justify-content-center" style="margin-top: 20px;">
+            <div class="col-lg-4 text-center" id="artStats" style="border-bottom: 1px solid black;">
+                <div class="row"><div class="col-sm-6 text-center" id="followerCount" style="border-right: 1px solid black;">Followers: <b><%=followersCount%></b></div><div class="col-sm-6 text-center" id="totalLikes"> </div></div>
+                <br>
+                <p> Amount Of Posts: <span style="font-weight: 600;"><%= upload.length %> </span></p>
+                <p> Name: <%= firstname%> <%= lastname %> </p>
+            </div>
+        </div>
+        <div class="row d-flex justify-content-center" style="margin-top: 5px;">
+            <div class="col-lg-4">
+                <p><b>Bio:</b></p>
+                <div>
+                    <%= bio %>
+                </div>
+            </div>
+        </div>
+    <% } else { %>
+
+        <div class="row d-flex justify-content-center" style="margin-top: 20px;">
+            <div class="col-lg-4" id="artStats" style="border-bottom: 1px solid black;">
+                <div class="row"><div class="col-sm-6 text-center" id="followerCount" style="border-right: 1px solid black;">Followers: <b><%=followersCount%></b></div><div class="col-sm-6 text-center" id="totalLikes"> </div></div>
+                <br>
+                <p> Amount Of Posts: <span style="font-weight: 600;"><%= upload.length %> </span></p>
+                <p> Name: <%= firstname%> <%= lastname %> </p>
+            </div>
+        </div>
+        <div class="row d-flex justify-content-center" style="margin-top: 5px;">
+            <div class="col-lg-4">
+                <p><b>Bio:</b></p>
+                <div>
+                    <%= bio %>
+                </div>
+            </div>
+        </div>
+
+    <% } %>
+
+    <div class="row d-flex justify-content-center" style="margin-top: 70px;">
+        <div class="col-lg-4 text-center" id="workTitle">
+            <h1> Work Uploaded By <%= username%>: </h1>
+        </div>
+    </div>
+    <div style="margin-top: 10px;" id="uploads">
+        <div class="container-fluid text-center" style="margin-top: 50px;">
+        <div class="row" >
+        <% if (upload.length != 0) {%> 
+        <% upload.forEach(data => { %>
+            <div class="col-sm-4" style="background-color: whitesmoke; border: 7px solid white;">
+                <div id="imgPanel">
+                    <img src="https://storage.googleapis.com/art_images/<%=data.image%>" onclick="goToImagePage('<%=randomId+data.id%>')" id="uploadImg">
+                </div>
+                    <div style="margin-top: 50px;">
+                        <p style="font-weight: 500;"> <%= data.title %> / by <a style="color: #3aafa9;" href="/users/<%=data.user_upload%>"> @<%=data.user_upload %></a></p>
+                        <% if (data.description.length < 47) { %>
+                            <p><%= data.description %> </p>
+                        <% } else { %>
+                            <div>
+                                <p><%= data.description.toString().substring(0,45) %> <b>...</b></p>
+                            </div>
+                        <% } %>
+                        <p class="dateLabel"> Uploaded On: <%= data.upload_date.toString().substring(3,15)%></p>
+                    </div>
+            </div>
+            
+        <%});%>
+        </div></div>
+        <script>
+    
+        goToImagePage = (id) => {
+            window.location.pathname = '/posts/' + id
+        }
+            $(document).ready(function () {
+                '<% if (isAuthenticated) {%>'
+                '<% followStats.forEach(followInfo => {%>'
+                    '<% if (followInfo.beingfollowed_id ==  profileId) {%>'
+                        $('#followBttn').removeClass()
+                        $('#followBttn').addClass('btn btn-outline-info')
+                        $('#followBttn').attr("alt", "<%=followersCount%>")
+                        $('#followBttn').attr("onclick", "unfollow(this.alt)")
+                        $('#followBttn').val("Unfollow")
+
+                    '<%}%>'
+                '<%})}%>'
+
+                var likes = 0;
+                '<% if (upload) { %>'
+                    '<% upload.forEach(data => { %>'
+                        '<% if (isAuthenticated) { %>'
+                            '<% likeStats.forEach(likeInfo => { %>'
+                                //if (likeInfo.post_id == data.id) hasLiked = true 
+                                '<%if (likeInfo.post_id == data.id) { %>'
+                                    $('.'+'<%=data.id%>').attr("src", "https://storage.googleapis.com/art_images/icons/likeiconpressed.png")
+                                    $('.'+'<%=data.id%>').attr("onclick", "unlike(this.className,this.alt)")
+                                '<%}%>'
+                            '<%})%>'
+                        '<%}%>'
+                        likes = likes + parseInt('<%=data.like_count%>')
+                    '<% })%>'
+                '<%} %>'
+                $('#totalLikes').append('Likes: <b>'+likes+'</b>')
+
+            })
+        
+
+
+            follow = (followers) => {
+                '<% if (isAuthenticated) { %>'
+                
+                    $.ajax({
+                        type: "POST",
+                        url: "/follow",
+                        data: {
+                            "userId":  '<%=userId%>',
+                            "followUserId": '<%=profileId%>'
+                        }   
+                    });
+                    
+                    var followCount = parseInt(followers) + 1
+                    $('#followBttn').removeClass()
+                    $('#followBttn').addClass('btn btn-outline-info')
+                    $('#followBttn').attr("alt", followCount)
+                    $('#followBttn').attr("onclick", "unfollow(this.alt)")
+                    $('#followBttn').val("Unfollow")
+                    $('#followerCount').empty()
+                    $('#followerCount').append('Followers: <b>'+ followCount+'</b>')
+                '<% } %>'
+            }
+
+            unfollow = (followers) => {
+                '<% if (isAuthenticated) { %>'
+                
+                    $.ajax({
+                        type: "POST",
+                        url: "/unfollow",
+                        data: {
+                            "userId":  '<%=userId%>',
+                            "followUserId": '<%=profileId%>'
+                        }   
+                    });
+                    var followCount = parseInt(followers) - 1
+                    $('#followBttn').removeClass()
+                    $('#followBttn').addClass('btn btn-success')
+                    $('#followBttn').attr("alt", followCount)
+                    $('#followBttn').attr("onclick", "follow(this.alt)")
+                    $('#followBttn').val("Follow")
+                    $('#followerCount').empty()
+                    $('#followerCount').append('Followers: <b>'+ followCount+'</b>')
+
+                '<% } %>'
+            }
+           
+        </script>
+        <% } else { %>
+            <div class="container">
+                <div class="row d-flex justify-content-center text-center">
+                    <div class="col-lg-4">
+                        <p> <%= username %> haven't uploaded yet.</p>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+        </div>
+        
+</div>
+
+<footer class="page-footer font-small blue bottom" style="margin-top: 240px; background-color: #3aafa9 !important;">
+    <div class="footer-copyright text-center py-3" style="color: #feffff !important;">© 2020 Copyright:
+      <a href="/" style="color: #def2f1 !important;"> RateMyArt.com</a>
+    </div>  
+  </footer>
+</body>
+
+</html>
+

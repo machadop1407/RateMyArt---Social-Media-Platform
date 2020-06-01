@@ -1,0 +1,131 @@
+<nav class="navbar navbar-expand-sm bg-dark navbar-light fixed-top">
+    <!-- Brand/logo -->
+    <a class="navbar-brand" href="#"><img src="https://storage.googleapis.com/art_images/samplelogo.png"></a>
+
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapse-toggle">
+        <span class="navbar-toggler-icon "></span>
+    </button>
+
+
+    <div class="form-inline my-2 my-lg-0 searchbar" style="margin-left: 50px;">
+        <input class="form-control" type="text" id="searchBar" placeholder="Search User:" name="searchInput"
+            autocomplete="off">
+        <button class="btn btn-dark" type="button" onclick="sendSearchQuery()"><span
+                class="fas fa-search"></span></button>
+    </div>
+
+
+
+
+
+    <div class="collapse navbar-collapse" id="collapse-toggle">
+        <!-- Links -->
+        <ul class="navbar-nav ml-auto" style="margin-right: 50px;">
+            <li class="nav-item">
+                <a class="nav-link text-dark" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark" href="/upload">Upload</a>
+            </li>
+            <% if (!isAuthenticated) { %>
+            <li class="nav-item">
+                <a class="nav-link text-dark" href="/login">Login</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark" href="/register">Sign Up</a>
+            </li>
+            <% } else { %>
+            <li class="nav-item dropdown">
+                <a class="nav-link text-dark dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false" href="#">
+                    Profile
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="/profile">MyProfile</a>
+                    <a class="dropdown-item" href="/followingFeed">Following Feed</a>
+
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark" href="/logout">Log Out</a>
+            </li>
+
+            <% } %>
+        </ul>
+</nav>
+
+<div class="card" id="searchResults">
+    <ul class="list-group list-group-flush" id="resultsList">
+    </ul>
+</div>
+<script>
+    var isSearching = false;
+
+    document.addEventListener("click", (evt) => {
+        if (isSearching) {
+            const flyoutElement = document.getElementById("searchResults");
+            let targetElement = evt.target; // clicked element
+
+            do {
+                if (targetElement == flyoutElement) {
+                    return;
+                }
+                targetElement = targetElement.parentNode;
+            } while (targetElement);
+            $('#resultsList').empty()
+            $('#searchResults').css({ 'visibility': 'hidden' })
+            isSearching = false;
+        }
+    });
+
+    var searched = false;
+
+    $('div').on('focusout', function () {
+        $(this).removeClass('active');
+    });
+
+    var resultPanel = () => {
+        var offset = $('#searchBar').position();
+        var height = $('#searchBar').height();
+        var width = $('#searchBar').width();
+        $('#searchResults').css({
+            'left': offset.left + "px",
+            'top': (offset.top + height + 20) + "px"
+        }).show()
+    }
+
+    $(window).resize(function () { resultPanel(); });
+
+    sendSearchQuery = () => {
+        $.ajax({
+            url: '/search',
+            type: 'POST',
+            data: {
+                "searchTerm": document.getElementById('searchBar').value
+            },
+            success: (res) => {
+                if (res.searchResults) {
+
+                    $('#searchResults').css({ 'visibility': 'visible' })
+
+                    $('#resultsList').empty()
+                    $('#searchBar').attr('value', res.searchTerm)
+                    resultPanel()
+                    isSearching = true
+                    res.searchResults.forEach(result => {
+                        $('#resultsList').append('<li class="list-group-item"><a href="/users/' + result.username + '" class="btn btn-primary" id="searchResults">' + result.username + '</a></li>')
+                        resultPanel()
+                    });
+                } else {
+                    $('#searchResults').css({ 'visibility': 'hidden' })
+                }
+            }
+        })
+
+
+    }
+
+
+
+</script>

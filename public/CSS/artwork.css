@@ -1,0 +1,74 @@
+body{
+	font-family: "Avenir Next" !important;
+	min-height: 100vh;
+}
+
+.artwork-container {
+    margin-top: 200px;
+}
+
+.container .row #likeBttn {
+	max-width: 32px;
+}
+
+
+.container .row #commentBttn {
+	max-width: 32px;
+}
+
+.btn-primary {
+	background-color: #feffff !important;
+	border-color: gainsboro;
+	color: #3aafa9;
+}
+
+.btn-primary:hover{
+	border-color: black;
+	color: #3aafa9;
+	font-weight: 600;
+}
+
+.btn-primary:active{
+	color: #3aafa9 !important;
+	background-color: rgb(230, 230, 230) !important;
+}
+
+.btn-success {
+	background-color: #3aafa9 !important;
+
+}
+
+#comments {
+	margin-top: 20px;
+}
+
+.btn.btn-secondary {
+	max-width: 100px;
+	
+}
+
+input, .text-center a {
+	color: black;
+	border: none;
+	font-weight: 500;
+	background-color: transparent;
+}
+
+#shareBttn {
+	max-width: 32px;
+	max-height: 32px;
+
+}
+
+.social a {
+	padding: 0 .5em;
+  }
+
+input:hover {
+	color: #3aafa9;
+}
+
+.text-center a:hover {
+	color: #3aafa9;
+	cursor: pointer;
+}

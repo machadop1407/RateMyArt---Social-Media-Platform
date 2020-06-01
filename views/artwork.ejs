@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+
+<head>
+    <title><%=title%></title>
+    <%- include('includes/head.ejs') %>
+    <link rel="stylesheet" type="text/css" href="../CSS/artwork.css">
+    <script src="https://cdn.jsdelivr.net/sharer.js/latest/sharer.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+</head>
+
+<body>
+
+    <%- include('includes/header.ejs') %>
+
+    <div class="container-fluid artwork-container">
+        <div class="row">
+            <div class="col-lg-6 uploadImg text-center" style="border-right: 2px solid #3aafa9;">
+                <img src="https://storage.googleapis.com/art_images/<%=image_link%>" class="img-fluid"
+                    style="max-height: 500px; position: sticky;">
+            </div>
+            <div class="col-lg-6 text-center">
+                <p style="font-weight: 500; margin-top: 30px; "> <%=title%> / by <a style="color: #3aafa9;"
+                        href="/users/<%=userPosted%>"> @<%=userPosted%></a></p>
+                <p><%= description %> </p>
+                <div class="container">
+                    <div class="row d-flex text-center justify-content-center">
+                        <div class="col-sm-6" style="max-width: 55px;">
+                            <input type="image" src="https://storage.googleapis.com/art_images/icons/likeicon.png"
+                                id="likeBttn" onclick="like(this.alt)" class="like" alt="<%=likeCount%>">
+                        </div>
+                        <div class="col-sm-6" style="max-width: 55px;">
+                            <input type="image" src="https://storage.googleapis.com/art_images/icons/commenticon.png"
+                                alt="Submit" id="commentBttn">
+                        </div>
+                    </div>
+                    <div class="row d-flex text-center justify-content-center">
+                        <div class="col-sm-6" style="max-width: 55px;">
+                            <label id="likeCountLabel" class="like"> <%=likeCount %> </label>
+                        </div>
+                        <div class="col-sm-6" style="max-width: 55px;">
+                            <label> <%= commentCount %> </label>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="dateLabel"> Uploaded On: <%= uploadDate.toString().substring(3,15)%></p>
+                <input type="image" src="https://storage.googleapis.com/art_images/icons/shareIcon2.png" alt="Submit"
+                    id="shareBttn" data-toggle="modal" data-target="#shareModal">
+
+                <hr style="max-width: 500px; height: 2px; background-color: #3aafa9;">
+                <h1 style="margin-top: 10px;"> Comment Section</h1>
+                <% if (isAuthenticated) { %>
+                <textarea class="form-control z-depth-1" id="commentTextArea" rows="2"
+                    placeholder="Comment..."></textarea>
+                <div class="text-right">
+                    <div style="display: inline-flex;">
+                        <p style="margin-top: auto; margin-bottom: auto; margin-right: 2px;"><%= username %></p>
+                        <input type="button" class="btn btn-dark" value="Send" onclick="sendComment()">
+                    </div>
+                </div>
+                <% } %>
+                <div id="comments">
+                    <% if (comments.length > 10) { %>
+                    <% for (var i = 0; i < 10; i++) {%>
+                    <% if (comments[i].parent_id == null) { %>
+                    <div class="card text-left" style="margin-top: 10px;" id="replyContainer" alt="<%=comments[i].id%>">
+                        <div class="card-header">
+                            <b><%= comments[i].comment_user %></b> / <%= comments[i].date.toString().substring(3,15) %>
+                        </div>
+                        <p style="margin: 10px;"> <%= comments[i].comment %></p>
+                        <div class="text-right">
+                            <% if (isAuthenticated) { %>
+                            <% if (comments[i].comment_user == username) { %>
+                            <input type="button" value="Delete" alt="<%=comments[i].id%>"
+                                id="<%=comments[i].amount_of_replies%>"
+                                onclick="deleteComment(this, this.alt, this.id)">
+                            <% } %>
+                            <input type="button" value="Reply" alt="<%=comments[i].id%>"
+                                onclick="sendReply(this, this.alt)">
+                                <%}%>
+                        </div>
+                    </div>
+                    <%if (comments[i].amount_of_replies > 0) {%>
+                    <div class="text-left">
+                        <input type="button" onclick="collapse(this.alt, this)" value="Show Replies &#x25BC;"
+                            alt="<%=comments[i].id%>" class="<%=comments[i].id%>">
+                    </div>
+                    <% } else { %>
+                    <div class="text-left">
+                        <input type="button" onclick="collapse(this.alt, this)" value="Show Replies &#x25BC;"
+                            style="visibility: hidden;" alt="<%=comments[i].id%>" class="<%=comments[i].id%>">
+                    </div>
+                    <% } %>
+                    <div id="<%=comments[i].id%>" class="collapse" alt="<%=replyComments.length%>">
+                        <% for (var x = 0; x < replyComments.length; x++) { %>
+
+                        <% if (replyComments[x].parent_id == comments[i].id) { %>
+                        <div class="card text-left" style="margin-top: 10px; margin-left: 20px;" id="replyContainer">
+                            <div class="card-header">
+                                <b><%=replyComments[x].comment_user%></b> /
+                                <%=replyComments[x].date.toString().substring(3,15)%>
+                            </div>
+                            <p style="margin: 10px;"> <%=replyComments[x].comment%></p>
+                        </div>
+                        <% } %>
+
+                        <% } %>
+                    </div>
+                    <% } %>
+                    <% } %>
+                    <% } else { %>
+                    <% for (var i = 0; i < comments.length; i++) { %>
+                    <% if (comments[i].parent_id == null) { %>
+
+                    <div class="card text-left" id="replyContainer" style="margin-top: 10px;" alt="<%=comments[i].id%>">
+                        <div class="card-header">
+                            <b><%= comments[i].comment_user %></b> / <%= comments[i].date.toString().substring(3,15) %>
+                        </div>
+                        <p style="margin: 10px;"> <%= comments[i].comment %></p>
+                        <div class="text-right">
+                            <% if (comments[i].comment_user == username) { %>
+                            <input type="button" value="Delete" alt="<%=comments[i].id%>"
+                                id="<%=comments[i].amount_of_replies%>" onclick="deleteComment(this, this.alt,this.id)">
+                            <% } %>
+                            <input type="button" value="Reply" alt="<%=comments[i].id%>"
+                                onclick="sendReply(this, this.alt)">
+                        </div>
+                    </div>
+                    <%if (comments[i].amount_of_replies > 0) {%>
+                    <div class="text-left">
+                        <input type="button" onclick="collapse(this.alt, this)" value="Show Replies &#x25BC;"
+                            alt="<%=comments[i].id%>" class="<%=comments[i].id%>">
+                    </div>
+                    <% } else { %>
+                    <div class="text-left">
+                        <input type="button" onclick="collapse(this.alt, this)" value="Show Replies &#x25BC;"
+                            style="visibility: hidden;" alt="<%=comments[i].id%>" class="<%=comments[i].id%>">
+                    </div>
+                    <% } %>
+
+                    <div id="<%=comments[i].id%>" alt="<%=replyComments.length%>" class="collapse">
+                        <% for (var x = 0; x < replyComments.length; x++) { %>
+                        <% if (replyComments[x].parent_id == comments[i].id) { %>
+                        <div class="card text-left" style="margin-top: 10px; margin-left: 20px;" id="replyContainer">
+                            <div class="card-header">
+                                <b><%=replyComments[x].comment_user%></b> /
+                                <%=replyComments[x].date.toString().substring(3,15)%>
+                            </div>
+                            <p style="margin: 10px;"> <%=replyComments[x].comment%></p>
+                        </div>
+                        <% } %>
+
+                        <% } %>
+                    </div>
+
+                    <% } %>
+                    <% } %>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <div class="modal" id="shareModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Share This Post</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body text-center">
+                    <a href="#" id="share-wa" class="sharer button"><i class="fa fa-3x fa-whatsapp"></i></a>
+                    <a href="#" id="share-fb" class="sharer button"><i class="fa fa-3x fa-facebook-square"></i></a>
+                    <a href="#" id="share-tw" class="sharer button"><i class="fa fa-3x fa-twitter-square"></i></a>
+                    <a href="#" id="share-em" class="sharer button"><i class="fa fa-3x fa-envelope-square"></i></a>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        
+
+        $(document).ready(function () {
+            '<% if (isAuthenticated) { %>'
+            '<% likeStats.forEach(likeInfo => { %>'
+            '<%if (likeInfo.post_id == id) { %>'
+            $('.like').attr("src", "https://storage.googleapis.com/art_images/icons/likeiconpressed.png")
+            $('.like').attr("onclick", "unlike(this.alt)")
+            '<%}%>'
+            '<%})%>'
+            '<%}%>'
+
+            // Uses sharer.js 
+            //  https://ellisonleao.github.io/sharer.js/#twitter    
+            var url = window.location.href;
+            var title = '<%= title %>' + " by @" + '<%= userPosted %>';
+            var subject = "Look At This Work!";
+            var via = "yourTwitterUsername";
+
+            //whatsapp
+            $('#share-wa').attr('data-url', url).attr('data-title', title).attr('data-sharer', 'whatsapp');
+            //facebook
+            $('#share-fb').attr('data-url', url).attr('data-sharer', 'facebook');
+            //twitter
+            $('#share-tw').attr('data-url', url).attr('data-title', title).attr('data-via', via).attr('data-sharer', 'twitter');
+            //email
+            $('#share-em').attr('data-url', url).attr('data-title', title).attr('data-subject', subject).attr('data-sharer', 'email');
+        })
+
+        var isSeeingReplies = false;
+        collapse = (link, elem) => {
+            var id = "#" + link
+            if (!isSeeingReplies) {
+                $(id).removeClass()
+                isSeeingReplies = true
+                $(elem).attr('value', 'Hide Replies \u25B2')
+            } else {
+                isSeeingReplies = false
+                $(id).addClass('collapse')
+                $(elem).attr('value', 'Show Replies \u25BC')
+
+
+            }
+        }
+
+        like = (likeCount) => {
+
+            '<% if (isAuthenticated) { %>'
+
+            $.ajax({
+                type: "POST",
+                url: "/like",
+                data: {
+                    "uploadId": '<%=id%>',
+                    "likeCount": likeCount
+                }
+            });
+
+            var count = parseInt(likeCount) + 1
+            $('.like').text(count)
+            $('.like').attr("alt", count)
+            $('.like').attr("src", "../images/icons/likeiconpressed.png")
+            $('.like').attr("onclick", "unlike(this.alt)")
+
+            '<% } %>'
+
+        }
+
+        unlike = (likeCount) => {
+
+            '<% if (isAuthenticated) { %>'
+
+            $.ajax({
+                type: "POST",
+                url: "/unlike",
+                data: {
+                    "uploadId": '<%=id%>',
+                    "likeCount": likeCount
+                }
+            });
+
+            var count = parseInt(likeCount) - 1
+            $('.like').text(count)
+            $('.like').attr("alt", count)
+            $('.like').attr("src", "https://storage.googleapis.com/art_images/icons/likeicon.png")
+            $('.like').attr("onclick", "like(this.alt)")
+
+
+            '<% } %>'
+
+        }
+
+        sendComment = () => {
+
+            '<% if (isAuthenticated) { %>'
+
+            var comment = $('#commentTextArea').val()
+            if ($("#commentTextArea").val().trim().length > 1) {
+                $.ajax({
+                    type: "POST",
+                    url: "/sendComment",
+                    data: {
+                        "uploadId": '<%= id %>',
+                        "comment": comment
+                    }
+                });
+
+                $("#commentTextArea").val('')
+
+                let time = Date.now();
+                let date_ob = new Date(time);
+                let date = date_ob.getDate();
+                let month = date_ob.toLocaleString('default', { month: 'short' })
+                let year = date_ob.getFullYear();
+
+                const fullDate = month + " " + date + " " + year
+
+                var user = '<%= username %>'
+                $("#comments").prepend('<div class="card text-left" style="margin-top: 10px;" id="replyContainer"><div class="card-header"><b>' + user + '</b> / ' + fullDate + ' </div><p style="margin: 10px;"> ' + comment + '</p><div class="text-right"><input type="button" value="Reply" onclick="sendReply()"></div></div>')
+                location.reload(true)
+            }
+            '<% } else { %>'
+
+
+            alert('You Need To Log In!')
+            '<% } %>'
+
+        }
+
+        deleteComment = (elem, commentId, childAmount) => {
+
+
+            var replyCount = parseInt(childAmount) + 1
+
+            $.ajax({
+                type: "POST",
+                url: "/deleteComment",
+                data: {
+                    "uploadId": '<%= id %>',
+                    "commentId": commentId,
+                    "replyAmount": replyCount
+                }
+            })
+
+            $(elem).parent().parent().remove()
+            $('#' + childAmount).attr('id', replyCount)
+            $('.' + commentId).remove()
+        }
+
+        var isReplying = false
+
+        sendReply = (elem, replyContainer) => {
+            '<% if (isAuthenticated) { %>'
+
+            if (!isReplying) {
+                var divTarget = $(elem).parent().parent()
+                divTarget.append('<div id="replyDiv"><textarea class="form-control z-depth-1" id="replyTextArea" rows="2" placeholder="Comment..."></textarea><div style="display-inline: flex"> <input type="button" value="Send" onclick="insertReply(' + divTarget.attr('alt') + ',' + replyContainer + ')"> <input type="button" value="Cancel" onclick="cancelReply()"></div></div>')
+                isReplying = true
+            }
+
+
+            '<% }else { %>'
+            alert('You Need To Log In!')
+            '<% } %>'
+        }
+
+        insertReply = (parentId, replyContainer) => {
+            '<% if (isAuthenticated) { %>'
+
+            var comment = $('#replyTextArea').val()
+
+            if ($("#replyTextArea").val().trim().length > 1) {
+                $.ajax({
+                    type: "POST",
+                    url: "/replyComment",
+                    data: {
+                        "uploadId": '<%= id %>',
+                        "parentId": parentId,
+                        "comment": comment
+                    }
+
+                });
+
+                $("#replyDiv").remove()
+                isReplying = false
+
+                let time = Date.now();
+                let date_ob = new Date(time);
+                let date = date_ob.getDate();
+                let month = date_ob.toLocaleString('default', { month: 'short' })
+                let year = date_ob.getFullYear();
+
+                const fullDate = month + " " + date + " " + year
+
+                var user = '<%= username %>'
+                $('.' + replyContainer).css({ "visibility": "visible" })
+                $("#" + parentId).prepend('<div class="card text-left" style="margin-top: 10px; margin-left: 20px;" id="replyContainer"><div class="card-header"><b>' + user + '</b> / ' + fullDate + ' </div><p style="margin: 10px;"> ' + comment + '</p><div class="text-right"></div></div>')
+
+            }
+            '<% } %>'
+
+        }
+
+        cancelReply = () => {
+            $("#replyDiv").remove()
+            isReplying = false
+        }
+
+
+    </script>
+
+
+    <footer class="page-footer font-small blue bottom" style="margin-top: 240px; background-color: #3aafa9 !important;">
+        <div class="footer-copyright text-center py-3" style="color: #feffff !important;">© 2020 Copyright:
+            <a href="/" style="color: #def2f1 !important;"> RateMyArt.com</a>
+        </div>
+    </footer>
+</body>
+
+</html>
