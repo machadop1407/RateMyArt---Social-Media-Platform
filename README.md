@@ -4,3 +4,5 @@ This is a social media platform targeted for artists and architects to post thei
 Skills: Node JS | ExpressJS | Google Cloud API (GCS) | MYSQL | HTML | CSS | JQuery | AJAX
 
 Time Taken: 2 Months
+
+Link: http://rate-my-art.herokuapp.com/
